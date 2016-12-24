@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle large>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Shop</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <p class="center-text">Here you can buy items for more customization.</p>
+
+  <p class="center-text" *ngIf="!firstLoad && items?.length === 0">
+    No item available, please contact admin for more info.
+  </p>
+
+  <ion-list>
+    <ion-item class="list-style" *ngFor="let item of items">
+      <h3 ion-line>{{item.name}}</h3>
+      <p ion-line>{{item.price}}</p>
+
+      <button ion-button clear icon-only item-right *ngIf="isItemBought(item)" (click)="activateItem(item)">
+        <ion-icon><i class="material-icons green-color">offline_pin</i></ion-icon>
+      </button>
+
+      <button ion-button clear icon-only item-right *ngIf="!isItemBought(item)" (click)="buyItem(item)">
+        <ion-icon><i class="material-icons blue-color">add_shopping_cart</i></ion-icon>
+      </button>
+    </ion-item>
+  </ion-list>
+
+  <ion-fab bottom right *ngIf="currentUser?.isAdmin">
+    <button ion-fab mini (tap)="addItem()"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+
+</ion-content>

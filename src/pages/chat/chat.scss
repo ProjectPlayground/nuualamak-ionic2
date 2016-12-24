@@ -1,0 +1,27 @@
+page-chat {
+
+  .chat-msg ion-label {
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0px;
+  }
+
+  .chat-header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .chat-content {
+    white-space: pre-wrap;
+  }
+
+  .userMsg ion-label {
+    background: #d6d8fc;
+  }
+
+  .othersMsg ion-label {
+    background: #f0f0f0;
+  }
+
+}
+

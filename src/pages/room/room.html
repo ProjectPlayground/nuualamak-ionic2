@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <button ion-button menuToggle large>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Pick a room</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-item text-wrap *ngIf="!firstLoad && rooms?.length === 0">
+    Create a room and start chatting.
+  </ion-item>
+  <ion-list>
+    <button ion-item *ngFor="let room of rooms" (tap)="pickRoom(room)">
+      {{room}}
+    </button>
+  </ion-list>
+  <ion-fab right bottom>
+    <button ion-fab (tap)="addRoom()"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+</ion-content>

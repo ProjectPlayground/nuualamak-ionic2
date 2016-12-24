@@ -1,0 +1,36 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Add a new item to the shop</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <form [formGroup]="addItemForm">
+      <ion-item>
+        <ion-label floating>Item Name</ion-label>
+        <ion-input type="text" formControlName="itemName" [(ngModel)]="itemToAdd.name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Item Category</ion-label>
+        <ion-input type="text" formControlName="itemCategory" [(ngModel)]="itemToAdd.category"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Number of days the item is available</ion-label>
+        <ion-input type="number" formControlName="daysToExpire" [(ngModel)]="itemToAdd.daysToExpire"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Item Price</ion-label>
+        <ion-input type="number" formControlName="itemPrice" [(ngModel)]="itemToAdd.price"></ion-input>
+      </ion-item>
+    </form>
+  </ion-list>
+
+
+  <ion-item no-lines class="btns-modal">
+    <button ion-button clear (click)="cancel()">Cancel</button>
+    <button ion-button clear (click)="add()">Add Item</button>
+  </ion-item>
+</ion-content>

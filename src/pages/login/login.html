@@ -1,0 +1,64 @@
+<ion-content padding>
+  <ion-list>
+    <form [formGroup]="loginForm">
+      <h2 no-lines text-center>Welcome to <span class="title">NUU ALAMAK</span></h2>
+      <h4 no-lines text-center>the best chat app !</h4>
+
+      <p no-lines>Sign up for free then log in to begin chatting with a lot of people from all over the word.</p>
+
+      <ion-item>
+        <ion-label floating>Email</ion-label>
+        <ion-input type="email" formControlName="email" [(ngModel)]="userModel.email"></ion-input>
+      </ion-item>
+      <ion-item no-lines *ngIf="formErrors.email">
+        <div class="alert alert-danger">{{formErrors.email}}</div>
+      </ion-item>
+
+      <ion-item *ngIf="!isOnLogin">
+        <ion-label floating>Username</ion-label>
+        <ion-input type="text" formControlName="username" [(ngModel)]="userModel.username"></ion-input>
+      </ion-item>
+      <ion-item no-lines *ngIf="formErrors.username">
+        <div class="alert alert-danger">{{formErrors.username}}</div>
+      </ion-item>
+
+      <ion-item margin-bottom>
+        <ion-label floating>Password</ion-label>
+        <ion-input type="password" formControlName="password" [(ngModel)]="password"></ion-input>
+      </ion-item>
+      <ion-item no-lines *ngIf="formErrors.password">
+        <div class="alert alert-danger">{{formErrors.password}}</div>
+      </ion-item>
+
+      <ion-item *ngIf="!isOnLogin">
+        <ion-label floating>Confirm Password</ion-label>
+        <ion-input type="password" formControlName="confirmPassword" [(ngModel)]="confirmPassword"></ion-input>
+      </ion-item>
+      <ion-item no-lines *ngIf="formErrors.confirmPassword">
+        <div class="alert alert-danger">{{formErrors.confirmPassword}}</div>
+      </ion-item>
+
+      <ion-item no-lines *ngIf="isOnLogin">
+        <button ion-button block large padding (tap)="login()">Login</button>
+      </ion-item>
+
+      <ion-item no-lines *ngIf="isOnLogin">
+        <button ion-button block large color="dark" clear (tap)="resetPasswork()">Forgot password</button>
+      </ion-item>
+
+      <ion-item no-lines *ngIf="!isOnLogin">
+        <button ion-button block large padding
+                [disabled]="!loginForm.valid" (tap)="loginForm.valid && signUp()">Sing up</button>
+      </ion-item>
+
+      <ion-item no-lines *ngIf="isOnLogin">
+        <button ion-button block large padding outline color="dark" (tap)="signUp()">Sing up</button>
+      </ion-item>
+
+      <ion-item no-lines *ngIf="!isOnLogin">
+        <button ion-button block large padding outline color="dark" (tap)="login()">Back to Login</button>
+      </ion-item>
+    </form>
+  </ion-list>
+
+</ion-content>

@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle large>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Your profile</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <form [formGroup]="profileForm">
+    <ion-item (tap)="changeAvatar()">
+      <ion-avatar item-left>
+        <img *ngIf="!isLoadingAvatar" [src]="userAvatar">
+        <ion-spinner *ngIf="isLoadingAvatar"></ion-spinner>
+      </ion-avatar>
+      <ion-label>Tap to change your avatar</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Username :</ion-label>
+      <ion-input type="text" formControlName="username" [(ngModel)]="user.username"></ion-input>
+    </ion-item>
+    <ion-item no-lines *ngIf="formErrors.username">
+      <div class="alert alert-danger">{{formErrors.username}}</div>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Email :</ion-label>
+      <ion-input type="email" formControlName="email" [(ngModel)]="user.email"></ion-input>
+    </ion-item>
+    <ion-item no-lines *ngIf="formErrors.email">
+      <div class="alert alert-danger">{{formErrors.email}}</div>
+    </ion-item>
+
+    <ion-item (tap)="changePassword()">
+      <ion-label>Password :</ion-label>
+      <ion-input type="password" disabled="true" value="******"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Gender :</ion-label>
+      <ion-select [ngModelOptions]="{standalone: true}" [(ngModel)]="user.gender">
+        <ion-option value="f">Female</ion-option>
+        <ion-option value="m">Male</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Age :</ion-label>
+      <ion-input type="number" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.age"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Country :</ion-label>
+      <ion-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.country"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Location :</ion-label>
+      <ion-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.location"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Hobbies :</ion-label>
+      <ion-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.hobbies"></ion-input>
+    </ion-item>
+  </form>
+
+  <button ion-button block large margin-top [disabled]="!profileForm.valid"
+          (tap)="profileForm.valid && save()">Save changes
+  </button>
+
+</ion-content>
