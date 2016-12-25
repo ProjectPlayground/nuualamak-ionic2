@@ -1,14 +1,16 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, Renderer, ViewChildren, ElementRef, QueryList } from '@angular/core';
 import { NavController, NavParams, ToastController, LoadingController, Content } from 'ionic-angular';
 import { ChatService } from './chat-service';
 import { ChatMessage } from './chat-message';
 import { UserService } from '../shared/user/user-service';
 import { UserModel } from '../shared/user/user.model';
+import { ItemService } from '../shop/item/item.service';
+import { ItemModel } from '../shop/item/item.model';
 
 @Component({
-  selector: 'page-chat',
+  selector   : 'page-chat',
   templateUrl: 'chat.html',
-  providers: [ChatService]
+  providers  : [ChatService]
 })
 export class ChatPage {
 
@@ -18,13 +20,16 @@ export class ChatPage {
   isPaused = false;
   firstLoad = true;
   user: UserModel;
+  itemsBought: Array<ItemModel>;
 
   @ViewChild(Content) content: Content;
+  @ViewChildren('chatContent') chatContentList: QueryList<ElementRef>;
 
   constructor(private navCtrl: NavController, private navParam: NavParams, private chatService: ChatService,
-              private toastCtrl: ToastController, private loadingCtrl: LoadingController,
-              private userService: UserService) {
+              private toastCtrl: ToastController, private loadingCtrl: LoadingController, private renderer: Renderer,
+              private userService: UserService, private itemService: ItemService) {
 
+    this.itemsBought = new Array<ItemModel>();
     this.currentRoom = this.navParam.data;
   }
 
@@ -34,11 +39,44 @@ export class ChatPage {
     this.firstLoad = true;
     this.typedMsg = '';
     this.userService.getCurrent()
-      .then(user => this.user = user);
+      .then(user => {
+        this.user = user;
+        this.itemService .getItemsBought(this.user, true)
+          .then((itemsBought: Array<ItemModel>) => {
+            this.itemsBought = itemsBought;
+            itemsBought.map((itemBought: ItemModel) => {
+              switch (itemBought.category) {
+                case 'background_image':
+                  this.chatContentList.forEach(chatContent =>
+                    this.renderer.setElementStyle(chatContent.nativeElement, 'background-image', itemBought.background_image));
+                  break;
+                case 'font':
+                  this.chatContentList.forEach(chatContent =>
+                    this.renderer.setElementStyle(chatContent.nativeElement, 'font-family', itemBought.font_name));
+                  break;
+                case 'font_color':
+                  this.chatContentList.forEach(chatContent =>
+                    this.renderer.setElementStyle(chatContent.nativeElement, 'color', itemBought.font_color));
+                  break;
+                case 'emoticon':
+                  this.chatContentList.forEach(chatContent =>
+                    this.renderer.setElementClass(chatContent.nativeElement, 'bold', true));
+                  break;
+                case 'bold':
+                  this.chatContentList.forEach(chatContent =>
+                    this.renderer.setElementClass(chatContent.nativeElement, 'bold', true));
+                  break;
+
+              }
+            });
+          })
+          .catch(err => console.log(err));
+      });
+
 
     let loading = this.loadingCtrl.create({
-      content: 'Loading',
-      spinner: 'crescent',
+      content     : 'Loading',
+      spinner     : 'crescent',
       showBackdrop: false
     });
     loading.present();
@@ -80,7 +118,7 @@ export class ChatPage {
     return new Date().getTime() - msg.timestamp
   }
 
-  private subscribeToRoom(loading?) {
+  private subscribeToRoom(loading ?) {
     this.chatService.getLastsEvent(this.currentRoom).on('value', (snapshot) => {
       let chatMessage = snapshot.val();
       this.firstLoad ? loading.dismissAll() : 0;
@@ -90,9 +128,10 @@ export class ChatPage {
     });
   }
 
-  private showToast(msg, style) {
+  private
+  showToast(msg, style) {
     this.toastCtrl.create({
-      message: msg,
+      message : msg,
       duration: 2000,
       cssClass: style
     }).present();

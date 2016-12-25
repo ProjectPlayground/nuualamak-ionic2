@@ -1,36 +1,64 @@
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>Add a new item to the shop</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>Add a new item to the shop</ion-title>
+    </ion-navbar>
 
 </ion-header>
 
 <ion-content padding>
-  <ion-list>
-    <form [formGroup]="addItemForm">
-      <ion-item>
-        <ion-label floating>Item Name</ion-label>
-        <ion-input type="text" formControlName="itemName" [(ngModel)]="itemToAdd.name"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label floating>Item Category</ion-label>
-        <ion-input type="text" formControlName="itemCategory" [(ngModel)]="itemToAdd.category"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label floating>Number of days the item is available</ion-label>
-        <ion-input type="number" formControlName="daysToExpire" [(ngModel)]="itemToAdd.daysToExpire"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label floating>Item Price</ion-label>
-        <ion-input type="number" formControlName="itemPrice" [(ngModel)]="itemToAdd.price"></ion-input>
-      </ion-item>
-    </form>
-  </ion-list>
+    <ion-list>
+        <form [formGroup]="addItemForm">
+            <ion-item>
+                <ion-label floating>Item Name</ion-label>
+                <ion-input type="text" formControlName="itemName" [(ngModel)]="itemToAdd.name"></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label floating>Item Category</ion-label>
+                <ion-select [ngModelOptions]="{standalone: true}" [(ngModel)]="itemToAdd.category">
+                    <ion-option value="theme">Theme</ion-option>
+                    <ion-option value="font">Font</ion-option>
+                    <ion-option value="font_color">Font Color</ion-option>
+                    <ion-option value="emoticon">Emoticon</ion-option>
+                </ion-select>
+            </ion-item>
+
+            <ion-item *ngIf="itemToAdd.category === 'theme'" (tap)="pickBackgroundImage()">
+                <ion-label floating>Tap to pick a Background Image</ion-label>
+                <ion-avatar item-right *ngIf="backgroundImage">
+                    <img [src]="backgroundImage">
+                </ion-avatar>
+            </ion-item>
+            <ion-item *ngIf="itemToAdd.category === 'font'">
+                <ion-label floating>Font name</ion-label>
+                <ion-input type="text" formControlName="itemCategoryData" [(ngModel)]="itemToAdd.font_name"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="itemToAdd.category === 'font_color'">
+                <ion-label floating>Font color</ion-label>
+                <ion-input type="text" formControlName="itemCategoryData"
+                           [(ngModel)]="itemToAdd.font_color"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="itemToAdd.category === 'emoticon'">
+                <ion-label floating>Emoticon</ion-label>
+                <ion-input type="text" formControlName="itemCategoryData" [(ngModel)]="itemToAdd.emoticon"></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label floating>Number of days the item is available</ion-label>
+                <ion-input type="number" formControlName="daysToExpire"
+                           [(ngModel)]="itemToAdd.daysToExpire"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Item Price</ion-label>
+                <ion-input type="number" formControlName="itemPrice" [(ngModel)]="itemToAdd.price"></ion-input>
+            </ion-item>
+        </form>
+    </ion-list>
 
 
-  <ion-item no-lines class="btns-modal">
-    <button ion-button clear (click)="cancel()">Cancel</button>
-    <button ion-button clear (click)="add()">Add Item</button>
-  </ion-item>
+    <ion-item no-lines class="btns-modal">
+        <button ion-button clear (click)="cancel()">Cancel</button>
+        <button ion-button clear (click)="add()">Add Item</button>
+    </ion-item>
 </ion-content>

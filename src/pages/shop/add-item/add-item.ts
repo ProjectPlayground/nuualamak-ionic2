@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ViewController } from 'ionic-angular';
+import { ViewController, ToastController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { ItemModel } from '../item/item.model';
+import { ImagePicker, ImagePickerOptions } from 'ionic-native/dist/es5/index';
 
 @Component({
   selector: 'page-add-item',
@@ -12,12 +13,13 @@ export class AddItemPage implements OnInit {
 
   addItemForm: FormGroup;
   itemToAdd: ItemModel;
+  private backgroundImage;
 
-  constructor(private viewCtrl: ViewController, private formBuilder: FormBuilder) {
+  constructor(private viewCtrl: ViewController, private formBuilder: FormBuilder, private toastCtrl: ToastController) {
 
     this.addItemForm = formBuilder.group({
       itemName: ['', Validators.required],
-      itemCategory: ['', Validators.required],
+      itemCategoryData: ['', Validators.required],
       daysToExpire: ['', Validators.required],
       itemPrice: ['', Validators.required]
     });
@@ -37,4 +39,22 @@ export class AddItemPage implements OnInit {
     this.viewCtrl.dismiss(this.itemToAdd);
   }
 
+  pickBackgroundImage() {
+    ImagePicker.getPictures(<ImagePickerOptions>{
+      maximumImagesCount: 1,
+      outputType: 0
+    }).then((results) => {
+      this.backgroundImage = results[0];
+    }, (err) => {
+      this.showToast('Fail to get picture', 'toastStyleError');
+    });
+  }
+
+  private showToast(msg, style) {
+    this.toastCtrl.create({
+      message: msg,
+      duration: 2000,
+      cssClass: style
+    }).present();
+  }
 }

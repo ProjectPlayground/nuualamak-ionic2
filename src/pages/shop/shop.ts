@@ -8,7 +8,7 @@ import { ItemService } from './item/item.service';
 import { AddItemPage } from './add-item/add-item';
 
 @Component({
-  selector: 'page-shop',
+  selector   : 'page-shop',
   templateUrl: 'shop.html'
 })
 export class ShopPage {
@@ -28,8 +28,8 @@ export class ShopPage {
   ionViewWillEnter() {
     this.firstLoad = true;
     let loading = this.loadingCtrl.create({
-      content: 'Loading',
-      spinner: 'crescent',
+      content     : 'Loading',
+      spinner     : 'crescent',
       showBackdrop: false
     });
     loading.present();
@@ -46,8 +46,8 @@ export class ShopPage {
     chgPasswor.onDidDismiss((newItem: ItemModel) => {
       if (newItem) {
         let loading = this.loadingCtrl.create({
-          content: 'Loading',
-          spinner: 'crescent',
+          content     : 'Loading',
+          spinner     : 'crescent',
           showBackdrop: false
         });
         loading.present();
@@ -65,8 +65,8 @@ export class ShopPage {
   buyItem(item: ItemModel) {
     if (this.currentUser.nuuBits >= item.price) {
       let loading = this.loadingCtrl.create({
-        content: 'Loading',
-        spinner: 'crescent',
+        content     : 'Loading',
+        spinner     : 'crescent',
         showBackdrop: false
       });
       loading.present();
@@ -87,8 +87,8 @@ export class ShopPage {
 
   activateItem(item: ItemModel) {
     let loading = this.loadingCtrl.create({
-      content: 'Loading',
-      spinner: 'crescent',
+      content     : 'Loading',
+      spinner     : 'crescent',
       showBackdrop: false
     });
     loading.present();
@@ -108,7 +108,7 @@ export class ShopPage {
   }
 
   private getItemsBought() {
-    this.itemService.getItemsBought(this.currentUser)
+    this.itemService.getItemsBought(this.currentUser, false)
       .then(itemsBought => this.itemsBought = itemsBought);
   }
 
@@ -132,7 +132,7 @@ export class ShopPage {
 
   private showToast(msg, style) {
     this.toastCtrl.create({
-      message: msg,
+      message : msg,
       duration: 2000,
       cssClass: style
     }).present();

@@ -69,7 +69,7 @@ export class UserService {
   updateUser(user: UserModel, userAvatar: string) {
     // Upload the avatar only if it was changed
     if (userAvatar.startsWith('file')) {
-      let indexToSplit = userAvatar.lastIndexOf('/')
+      let indexToSplit = userAvatar.lastIndexOf('/');
       let fileDirectory = userAvatar.substring(0, indexToSplit);
       let fileName = userAvatar.substring(indexToSplit + 1);
       // Create the new avatar file

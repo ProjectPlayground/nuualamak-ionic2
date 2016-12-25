@@ -1,45 +1,45 @@
 <ion-header>
-  <ion-navbar>
-    <button ion-button menuToggle large>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>Room: {{currentRoom}}</ion-title>
-    <ion-buttons end>
-      <button ion-button large (tap)="togglePauseChat()">
-        <ion-icon name="pause" *ngIf="!isPaused"></ion-icon>
-        <ion-icon name="play" *ngIf="isPaused"></ion-icon>
-      </button>
-    </ion-buttons>
-  </ion-navbar>
+    <ion-navbar>
+        <button ion-button menuToggle large>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Room: {{currentRoom}}</ion-title>
+        <ion-buttons end>
+            <button ion-button large (tap)="togglePauseChat()">
+                <ion-icon name="pause" *ngIf="!isPaused"></ion-icon>
+                <ion-icon name="play" *ngIf="isPaused"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
 </ion-header>
 
 
 <ion-content>
-  <ion-list>
-    <ion-item vertical-align-top text-wrap *ngIf="!firstLoad && messageList?.length === 0">
-      Send a message, and it would be the first one in this room.
-    </ion-item>
-    <ion-item text-wrap class="chat-msg" *ngFor="let msg of messageList"
-              [ngClass]="{userMsg: msg.user.uid===user.uid, othersMsg: msg.user.uid!==user.uid}">
-      <span class="chat-header">
-        <p>{{msg.user.username}}:</p>
-        <p *ngIf="getFarCodeTimestamp(msg) === 0">last {{getTimePassed(msg) | date:'mm'}} minutes</p>
-        <p *ngIf="getFarCodeTimestamp(msg) === 1">{{msg.timestamp | date:'HH:mm:ss'}}</p>
-        <p *ngIf="getFarCodeTimestamp(msg) === 2">{{msg.timestamp | date}}</p>
-      </span>
-      <div class="chat-content">{{msg.content}}</div>
-    </ion-item>
-  </ion-list>
+    <ion-list>
+        <ion-item vertical-align-top text-wrap *ngIf="!firstLoad && messageList?.length === 0">
+            Send a message, and it would be the first one in this room.
+        </ion-item>
+        <ion-item text-wrap class="chat-msg" *ngFor="let msg of messageList"
+                  [ngClass]="{userMsg: msg.user.uid===user.uid, othersMsg: msg.user.uid!==user.uid}">
+            <span class="chat-header">
+                <p>{{msg.user.username}}:</p>
+                <p *ngIf="getFarCodeTimestamp(msg) === 0">last {{getTimePassed(msg) | date:'mm'}} minutes</p>
+                <p *ngIf="getFarCodeTimestamp(msg) === 1">{{msg.timestamp | date:'HH:mm:ss'}}</p>
+                <p *ngIf="getFarCodeTimestamp(msg) === 2">{{msg.timestamp | date}}</p>
+            </span>
+            <div class="chat-content" #chatContent>{{msg.content}}</div>
+        </ion-item>
+    </ion-list>
 </ion-content>
 
 <ion-footer>
-  <ion-toolbar>
-    <ion-textarea rows="2" placeholder="Type your text Here" [(ngModel)]="typedMsg"></ion-textarea>
-    <ion-buttons end>
-      <button ion-button icon-right color="royal" [disabled]="typedMsg === ''" (tap)="sendMsg()">
-        Send
-        <ion-icon name="send"></ion-icon>
-      </button>
-    </ion-buttons>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-textarea rows="2" placeholder="Type your text Here" [(ngModel)]="typedMsg"></ion-textarea>
+        <ion-buttons end>
+            <button ion-button icon-right color="royal" [disabled]="typedMsg === ''" (tap)="sendMsg()">
+                Send
+                <ion-icon name="send"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-toolbar>
 </ion-footer>
