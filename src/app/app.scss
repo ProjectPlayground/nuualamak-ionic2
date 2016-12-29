@@ -1,5 +1,4 @@
 // http://ionicframework.com/docs/v2/theming/
-
 // App Global Sass
 // --------------------------------------------------
 // Put style rules here that you want to apply globally. These
@@ -76,4 +75,8 @@
   background-color: #f2dede;
   border-color: #ebccd1;
   padding: 10px;
+}
+
+ion-label h3:first-child {
+  margin-top: auto !important;
 }

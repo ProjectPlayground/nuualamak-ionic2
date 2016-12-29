@@ -10,7 +10,7 @@ import { ShopPage } from '../pages/shop/shop';
 import { UserModel } from '../pages/shared/user/user.model';
 import { UserService } from '../pages/shared/user/user-service';
 import { FirebaseService } from '../pages/shared/firebase-service';
-import { SideMenuService } from '../pages/shared/toolbar.service';
+import { UserReady } from '../pages/shared/user/user-notifier';
 
 
 @Component({
@@ -23,8 +23,9 @@ export class MyApp {
   pages: Array<{title: string, component: any}>;
   currentUser: UserModel;
 
-  constructor(public platform: Platform, public firebaseService: FirebaseService,
-              public userService: UserService, public sideMenuService: SideMenuService) {
+  constructor(private platform: Platform, private firebaseService: FirebaseService,
+              private userReady: UserReady, private userService: UserService) {
+
     this.initializeApp();
 
     this.pages = [
@@ -35,11 +36,9 @@ export class MyApp {
       {title: 'Disconnect', component: LoginPage}
     ];
 
-    console.log('ionViewWillEnter');
-    this.sideMenuService.initSource$.subscribe(show => {
+    this.userReady.notifySource$.subscribe(() =>
       this.userService.getCurrent()
-        .then(currentUser => this.currentUser = currentUser);
-    });
+        .then(currentUser => this.currentUser = currentUser));
   }
 
   initializeApp() {
@@ -55,8 +54,10 @@ export class MyApp {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to init in this scenario
     if (page.title == this.pages[this.pages.length - 1].title) {
-      this.userService.logOut();
+      this.userService.logOut()
+        .then(() => this.nav.setRoot(page.component));
+    } else {
+      this.nav.setRoot(page.component);
     }
-    this.nav.setRoot(page.component);
   }
 }

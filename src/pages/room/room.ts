@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, AlertController, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, AlertController, ToastController, LoadingController, LoadingOptions } from 'ionic-angular';
 
 import { RoomService } from './room.service';
 import { ChatPage } from '../chat/chat';
@@ -15,6 +15,12 @@ export class RoomPage {
   firstLoad = true;
   rooms: Array<string>;
 
+  private loadingOptions: LoadingOptions = {
+    content: 'Loading',
+    spinner: 'crescent',
+    showBackdrop: false
+  };
+
   constructor(private navCtrl: NavController, private roomService: RoomService,
               private alertCtrl: AlertController, private toastCtrl: ToastController,
               private loadingCtrl: LoadingController, private messageService: ValidationMessageService) {
@@ -23,11 +29,7 @@ export class RoomPage {
 
   ionViewWillEnter() {
     this.firstLoad = true;
-    let loading = this.loadingCtrl.create({
-      content: 'Loading',
-      spinner: 'crescent',
-      showBackdrop: false
-    });
+    let loading = this.loadingCtrl.create(this.loadingOptions);
     loading.present();
     this.roomService.getAll()
       .then(rooms => {
@@ -72,11 +74,7 @@ export class RoomPage {
                 title: this.messageService.validationMessages['roomName']['minlength']
               }).present();
             } else {
-              let loading = this.loadingCtrl.create({
-                content: 'Loading',
-                spinner: 'crescent',
-                showBackdrop: false
-              });
+              let loading = this.loadingCtrl.create(this.loadingOptions);
               loading.present();
               this.roomService.add(data.newRoomName)
                 .then(() => {

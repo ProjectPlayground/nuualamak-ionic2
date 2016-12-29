@@ -10,10 +10,12 @@ import { SettingPage } from '../pages/setting/setting';
 import { UserService } from '../pages/shared/user/user-service';
 import { ChangePasswordPage } from '../pages/profile/change-password/change-password';
 import { FirebaseService } from '../pages/shared/firebase-service';
-import { SideMenuService } from '../pages/shared/toolbar.service';
 import { ItemService } from '../pages/shop/item/item.service';
 import { AddItemPage } from '../pages/shop/add-item/add-item';
 import { ValidationMessageService } from '../pages/shared/validation-message.service';
+import { EmojiModule } from '../vendor/angular2-emoji/module';
+import { UserReady } from '../pages/shared/user/user-notifier';
+import { UserItemsService } from '../pages/shared/user/user-items-service';
 
 @NgModule({
   declarations: [
@@ -25,9 +27,10 @@ import { ValidationMessageService } from '../pages/shared/validation-message.ser
     SettingPage,
     ShopPage,
     ChangePasswordPage,
-    AddItemPage
+    AddItemPage,
   ],
   imports: [
+    EmojiModule,
     IonicModule.forRoot(MyApp, {
       list: {
         margin: 0
@@ -51,7 +54,8 @@ import { ValidationMessageService } from '../pages/shared/validation-message.ser
     ItemService,
     ValidationMessageService,
     FirebaseService,
-    SideMenuService,
+    UserItemsService,
+    UserReady,
     {provide: ErrorHandler, useClass: IonicErrorHandler}]
 })
 export class AppModule {

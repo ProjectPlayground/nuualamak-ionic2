@@ -1,12 +1,19 @@
 import { Component } from '@angular/core';
-import { NavController, ToastController, MenuController, LoadingController, AlertController } from 'ionic-angular';
+import {
+  NavController,
+  ToastController,
+  MenuController,
+  LoadingController,
+  AlertController,
+  LoadingOptions
+} from 'ionic-angular';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import * as firebase from 'firebase';
 
 import { UserModel } from '../shared/user/user.model';
 import { RoomPage } from '../room/room';
 import { UserService } from '../shared/user/user-service';
 import { GlobalValidator } from '../shared/global.validator';
-import { SideMenuService } from '../shared/toolbar.service';
 import { ValidationMessageService } from '../shared/validation-message.service';
 
 
@@ -28,16 +35,29 @@ export class LoginPage {
     confirmPassword: ''
   };
 
+  private loadingOptions: LoadingOptions;
+
   constructor(private navCtrl: NavController, private menuCtr: MenuController, private alertCtrl: AlertController,
               private toastCtrl: ToastController, private loadingCtrl: LoadingController,
               private userService: UserService, private formBuilder: FormBuilder,
-              private sideMenuService: SideMenuService, private messageService: ValidationMessageService) {
+              private messageService: ValidationMessageService) {
 
+    this.loadingOptions = {
+      content: 'Loading',
+      spinner: 'crescent',
+      showBackdrop: false
+    };
     this.userModel = new UserModel();
     this.loginForm = formBuilder.group({
-      username: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(20)])],
-      email: ['', Validators.compose([GlobalValidator.mailFormat, Validators.required, Validators.maxLength(40)])],
-      password: ['', Validators.compose([Validators.required, Validators.minLength(6), Validators.maxLength(20)])],
+      username: ['', Validators.compose([Validators.required,
+        Validators.minLength(this.messageService.minLengthUsername),
+        Validators.maxLength(this.messageService.maxLengthUsername)])],
+      email: ['', Validators.compose([Validators.required,
+        GlobalValidator.mailFormat,
+        Validators.maxLength(this.messageService.maxLengthEmail)])],
+      password: ['', Validators.compose([Validators.required,
+        Validators.minLength(this.messageService.minLengthPassword),
+        Validators.maxLength(this.messageService.maxLengthPassword)])],
       confirmPassword: ['', Validators.required]
     });
     this.loginForm.valueChanges
@@ -46,13 +66,19 @@ export class LoginPage {
   }
 
   ionViewWillEnter() {
-    if (this.userService.isAuth()) {
-      this.navCtrl.setRoot(RoomPage);
-    } else {
-      this.userModel = new UserModel();
-      this.menuCtr.close();
-      this.menuCtr.enable(false);
-    }
+    let loading = this.loadingCtrl.create(this.loadingOptions);
+    loading.present();
+    this.userService.isAuth()
+      .then(isAuth => {
+        loading.dismissAll();
+        if (isAuth) {
+          this.navCtrl.setRoot(RoomPage);
+        } else {
+          this.userModel = new UserModel();
+          this.menuCtr.close();
+          this.menuCtr.enable(false);
+        }
+      });
   }
 
   ionViewWillLeave() {
@@ -67,23 +93,29 @@ export class LoginPage {
         .map(field => this.formErrors[field])
         .filter(value => value !== '');
       if (errInputLogin.length === 0 && this.userModel.email !== '' && this.password !== '') {
-        let loading = this.loadingCtrl.create({
-          content: 'Loading',
-          spinner: 'crescent',
-          showBackdrop: false
-        });
+        let loading = this.loadingCtrl.create(this.loadingOptions);
         loading.present();
         this.userService.login(this.userModel, this.password)
           .then(() => {
             this.navCtrl.setRoot(RoomPage);
-            this.sideMenuService.init(true);
             this.showToast('Log in Success', 'toastStyle');
+            if (this.userService.bonusNuuBits.got) {
+              this.showToast(`Nice, you've got ${this.userService.bonusNuuBits.value} 
+                after ${this.userService.bonusNuuBits.consecutiveLogIn} consecutive login !`, 'toastStyle', 5000);
+            }
           })
-          .catch(err => {
+          .catch((err: firebase.FirebaseError) => {
             loading.dismissAll();
-            //TODO login err msgs
-            console.log(err);
-            this.showToast('Log in Fail', 'toastStyleError')
+            console.error(err);
+            let errMsg = 'Log in Fail';
+            switch (err.code) {
+              case 'auth/invalid-email':
+              case 'auth/user-not-found':
+              case 'auth/wrong-password':
+                errMsg = 'Incorrect email or password';
+                break;
+            }
+            this.showToast(errMsg, 'toastStyleError')
           });
       } else {
         this.alertCtrl.create({
@@ -99,34 +131,46 @@ export class LoginPage {
   signUp() {
     if (this.isOnLogin) {
       this.isOnLogin = false;
-      //TODO replace this with a promise
+      //TODO replace this with a promise may be ?
       setTimeout(GlobalValidator.samePassword(this.loginForm, 'login'), 2000);
-      //setTimeout(GlobalValidator.samePassword(this.loginForm, 'login'), 2000);
     } else {
-      let loading = this.loadingCtrl.create({
-        content: 'Loading',
-        spinner: 'crescent',
-        showBackdrop: false
-      });
+      let loading = this.loadingCtrl.create(this.loadingOptions);
       loading.present();
       this.userService.create(this.userModel, this.password)
         .then(() => {
           this.navCtrl.setRoot(RoomPage);
-          this.sideMenuService.init(true);
           this.showToast('Sign Up Success', 'toastStyle');
         })
-        .catch(err => {
+        .catch((err: firebase.FirebaseError) => {
           loading.dismissAll();
-          console.log(err);
-          this.showToast('Sign up Fail', 'toastStyleError');
+          console.error(err);
+          let errMsg = 'Sign Up Fail';
+          switch (err.code) {
+            case 'auth/email-already-in-use':
+              errMsg = err.message;
+              break;
+            case 'auth/network-request-failed':
+              errMsg = 'No internet connection';
+              break;
+          }
+          this.showToast(errMsg, 'toastStyleError');
         });
     }
   }
 
-  private showToast(msg, style) {
+  resetPassword() {
+    this.userService.resetPassword(this.userModel).then(() => {
+      this.showToast('Reset password email sent', 'toastStyle');
+    }, (err) => {
+      console.error(err);
+      this.showToast('Could not reset your password, please contact admin', 'toastStyleError');
+    });
+  }
+
+  private showToast(msg, style, duration: number = 2000) {
     this.toastCtrl.create({
       message: msg,
-      duration: 2000,
+      duration: duration,
       cssClass: style
     }).present();
   }

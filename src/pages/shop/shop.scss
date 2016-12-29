@@ -10,8 +10,27 @@ page-shop {
     color: #22bfbf;
   }
 
-  .blue-color {
-    color: #003366;
+  .btn-shop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+  }
+
+  .green-color {
+    color: #22bfbf;
+  }
+
+  .grey_color {
+    color: #67798a;
+  }
+
+  .violet-color {
+    color: #6d00fe;
+  }
+
+  .date-font {
+    font-size: smaller;
   }
 
 }

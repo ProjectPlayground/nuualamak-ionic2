@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ViewController, ToastController } from 'ionic-angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-import { ItemModel } from '../item/item.model';
 import { ImagePicker, ImagePickerOptions } from 'ionic-native/dist/es5/index';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ItemModel } from '../item/item.model';
 
 @Component({
   selector: 'page-add-item',
@@ -36,6 +35,7 @@ export class AddItemPage implements OnInit {
   }
 
   add() {
+    this.itemToAdd.background_image = this.backgroundImage;
     this.viewCtrl.dismiss(this.itemToAdd);
   }
 

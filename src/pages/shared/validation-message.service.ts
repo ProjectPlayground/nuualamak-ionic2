@@ -11,6 +11,10 @@ export class ValidationMessageService {
   public maxLengthPassword = 20;
   public minLengthRoomName = 5;
   public maxLengthRoomName = 20;
+  public maxAge = 149;
+  public maxLengthCountry = 50;
+  public maxLengthLocation = 50;
+  public maxLengthHobbies = 50;
 
   validationMessages = {
     'email': {
@@ -37,6 +41,18 @@ export class ValidationMessageService {
       'minlength': this.minLength('Room Name', this.minLengthRoomName),
       'maxlength': this.maxLength('Room Name', this.maxLengthRoomName),
     },
+    'age': {
+      'pattern': this.maxValue('Age', this.maxAge)
+    },
+    'country': {
+      'maxlength': this.maxLength('Country', this.maxLengthCountry)
+    },
+    'location': {
+      'maxlength': this.maxLength('Location', this.maxLengthLocation)
+    },
+    'hobbies': {
+      'maxlength': this.maxLength('Hobbies', this.maxLengthHobbies)
+    }
   };
 
   onValueChanged(currentForm: FormGroup, formErrors: any) {
@@ -62,6 +78,10 @@ export class ValidationMessageService {
 
   private maxLength(field: string, maxLength: number): string {
     return `The ${field} cannot be more than ${maxLength} characters long.`;
+  }
+
+  private maxValue(field: string, maxValue: number) {
+    return `The ${field} cannot be more than ${maxValue}.`;
   }
 
   private required(field: string): string {

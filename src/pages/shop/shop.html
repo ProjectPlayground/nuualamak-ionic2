@@ -17,21 +17,36 @@
 
   <ion-list>
     <ion-item class="list-style" *ngFor="let item of items">
-      <h3 ion-line>{{item.name}}</h3>
-      <p ion-line>{{item.price}}</p>
+      <h3>{{item.name}}</h3>
+      <p>{{item.price}}</p>
 
-      <button ion-button clear icon-only item-right *ngIf="isItemBought(item)" (click)="activateItem(item)">
-        <ion-icon><i class="material-icons green-color">offline_pin</i></ion-icon>
-      </button>
+      <div item-right class="btn-shop">
 
-      <button ion-button clear icon-only item-right *ngIf="!isItemBought(item)" (click)="buyItem(item)">
-        <ion-icon><i class="material-icons blue-color">add_shopping_cart</i></ion-icon>
-      </button>
+        <button ion-button clear icon-only *ngIf="!isItemBought(item)"
+                (click)="buyItem(item)">
+          <ion-icon><i class="material-icons violet-color">add_shopping_cart</i></ion-icon>
+        </button>
+
+        <button ion-button clear icon-only *ngIf="isItemBought(item) && !isItemActive(item)"
+                (click)="activateItem(item)">
+          <ion-icon><i class="material-icons grey_color">gavel</i></ion-icon>
+        </button>
+
+        <div clear *ngIf="isItemActive(item) && !isItemInactive(item)">
+          <ion-icon><i class="material-icons green-color">offline_pin</i></ion-icon>
+        </div>
+
+        <div *ngIf="getActivationDate(item) !== ''" class="date-font">
+          {{getActivationDate(item) | date}}
+        </div>
+      </div>
     </ion-item>
   </ion-list>
 
   <ion-fab bottom right *ngIf="currentUser?.isAdmin">
-    <button ion-fab mini (tap)="addItem()"><ion-icon name="add"></ion-icon></button>
+    <button ion-fab mini (tap)="addItem()">
+      <ion-icon name="add"></ion-icon>
+    </button>
   </ion-fab>
 
 </ion-content>

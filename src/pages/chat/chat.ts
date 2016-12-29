@@ -1,5 +1,5 @@
-import { Component, ViewChild, Renderer, ViewChildren, ElementRef, QueryList } from '@angular/core';
-import { NavController, NavParams, ToastController, LoadingController, Content } from 'ionic-angular';
+import { Component, ViewChild, Renderer } from '@angular/core';
+import { NavController, NavParams, ToastController, LoadingController, Content, LoadingOptions } from 'ionic-angular';
 import { ChatService } from './chat-service';
 import { ChatMessage } from './chat-message';
 import { UserService } from '../shared/user/user-service';
@@ -8,28 +8,40 @@ import { ItemService } from '../shop/item/item.service';
 import { ItemModel } from '../shop/item/item.model';
 
 @Component({
-  selector   : 'page-chat',
+  selector: 'page-chat',
   templateUrl: 'chat.html',
-  providers  : [ChatService]
+  providers: [ChatService]
 })
 export class ChatPage {
 
   currentRoom: string;
   typedMsg: string;
-  messageList: Array<ChatMessage>;
-  isPaused = false;
-  firstLoad = true;
   user: UserModel;
+  messageList: Array<ChatMessage>;
   itemsBought: Array<ItemModel>;
 
+  fontName = 'inherit';
+  fontColor = 'black';
+  backgroundImage = '';
+  isBold = false;
+  isPaused = false;
+  firstLoad = true;
+
+  private loadingOptions: LoadingOptions;
+
   @ViewChild(Content) content: Content;
-  @ViewChildren('chatContent') chatContentList: QueryList<ElementRef>;
 
   constructor(private navCtrl: NavController, private navParam: NavParams, private chatService: ChatService,
               private toastCtrl: ToastController, private loadingCtrl: LoadingController, private renderer: Renderer,
               private userService: UserService, private itemService: ItemService) {
 
+    this.loadingOptions = {
+      content: 'Loading',
+      spinner: 'crescent',
+      showBackdrop: false
+    };
     this.itemsBought = new Array<ItemModel>();
+    this.typedMsg = '';
     this.currentRoom = this.navParam.data;
   }
 
@@ -41,44 +53,16 @@ export class ChatPage {
     this.userService.getCurrent()
       .then(user => {
         this.user = user;
-        this.itemService .getItemsBought(this.user, true)
+        this.itemService .getActiveItemsBought(this.user)
           .then((itemsBought: Array<ItemModel>) => {
             this.itemsBought = itemsBought;
-            itemsBought.map((itemBought: ItemModel) => {
-              switch (itemBought.category) {
-                case 'background_image':
-                  this.chatContentList.forEach(chatContent =>
-                    this.renderer.setElementStyle(chatContent.nativeElement, 'background-image', itemBought.background_image));
-                  break;
-                case 'font':
-                  this.chatContentList.forEach(chatContent =>
-                    this.renderer.setElementStyle(chatContent.nativeElement, 'font-family', itemBought.font_name));
-                  break;
-                case 'font_color':
-                  this.chatContentList.forEach(chatContent =>
-                    this.renderer.setElementStyle(chatContent.nativeElement, 'color', itemBought.font_color));
-                  break;
-                case 'emoticon':
-                  this.chatContentList.forEach(chatContent =>
-                    this.renderer.setElementClass(chatContent.nativeElement, 'bold', true));
-                  break;
-                case 'bold':
-                  this.chatContentList.forEach(chatContent =>
-                    this.renderer.setElementClass(chatContent.nativeElement, 'bold', true));
-                  break;
-
-              }
-            });
+            this.applyItemsStyles();
           })
           .catch(err => console.log(err));
       });
 
 
-    let loading = this.loadingCtrl.create({
-      content     : 'Loading',
-      spinner     : 'crescent',
-      showBackdrop: false
-    });
+    let loading = this.loadingCtrl.create(this.loadingOptions);
     loading.present();
     this.subscribeToRoom(loading);
   }
@@ -87,17 +71,24 @@ export class ChatPage {
     this.content.scrollToBottom(500);
   }
 
+  ionViewWillLeave() {
+    this.unSubscribeToRoom();
+  }
+
   sendMsg() {
-    this.chatService.send(this.currentRoom, this.typedMsg)
+    this.chatService.send(this.currentRoom, this.typedMsg.trim())
       .then(() => this.typedMsg = '')
-      .catch(err => this.showToast('Fail sending message', 'toastStyleError'));
+      .catch(err => {
+        console.error(err);
+        this.showToast('Fail sending message', 'toastStyleError');
+      });
   }
 
   togglePauseChat() {
     if (this.isPaused) {
       this.subscribeToRoom();
     } else {
-      this.chatService.getLastsEvent(this.currentRoom).off();
+      this.unSubscribeToRoom();
     }
     this.isPaused = !this.isPaused;
   }
@@ -118,6 +109,29 @@ export class ChatPage {
     return new Date().getTime() - msg.timestamp
   }
 
+  private applyItemsStyles() {
+    this.itemsBought.map((itemBought: ItemModel) => {
+      switch (itemBought.category) {
+        case 'theme':
+          this.backgroundImage = itemBought.background_image;
+          break;
+        case 'font':
+          this.fontName = itemBought.font_name;
+          break;
+        case 'font_color':
+          this.fontColor = itemBought.font_color;
+          break;
+        case 'emoticon':
+          //TODO change emojis list
+          break;
+        case 'bold':
+          this.isBold = true;
+          break;
+
+      }
+    });
+  }
+
   private subscribeToRoom(loading ?) {
     this.chatService.getLastsEvent(this.currentRoom).on('value', (snapshot) => {
       let chatMessage = snapshot.val();
@@ -125,15 +139,20 @@ export class ChatPage {
       this.messageList = Object.keys(chatMessage ? chatMessage : [])
         .map(key => chatMessage[key]);
       setTimeout(() => this.content ? this.content.scrollToBottom(500) : 0, 1000);
+      this.showToast('New messages received...', 'toastStyle');
     });
   }
 
-  private
-  showToast(msg, style) {
+  private unSubscribeToRoom() {
+    this.chatService.getLastsEvent(this.currentRoom).off();
+  }
+
+  private showToast(msg, style) {
     this.toastCtrl.create({
-      message : msg,
+      message: msg,
       duration: 2000,
       cssClass: style
     }).present();
   }
+
 }

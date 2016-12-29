@@ -4,13 +4,18 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>Your profile</ion-title>
+    <ion-buttons end>
+      <button ion-button clear large icon-only *ngIf="!editMode" (click)="editItems(true)">
+        <ion-icon><i class="material-icons">mode_edit</i></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 
 <ion-content padding>
   <form [formGroup]="profileForm">
-    <ion-item (tap)="changeAvatar()">
+    <ion-item (tap)="editMode && changeAvatar()">
       <ion-avatar item-left>
         <img *ngIf="!isLoadingAvatar" [src]="userAvatar">
         <ion-spinner *ngIf="isLoadingAvatar"></ion-spinner>
@@ -20,7 +25,10 @@
 
     <ion-item>
       <ion-label>Username :</ion-label>
-      <ion-input type="text" formControlName="username" [(ngModel)]="user.username"></ion-input>
+      <ion-input type="text"
+                 [disabled]="!editMode"
+                 formControlName="username"
+                 value="{{user.username}}"></ion-input>
     </ion-item>
     <ion-item no-lines *ngIf="formErrors.username">
       <div class="alert alert-danger">{{formErrors.username}}</div>
@@ -28,20 +36,26 @@
 
     <ion-item>
       <ion-label>Email :</ion-label>
-      <ion-input type="email" formControlName="email" [(ngModel)]="user.email"></ion-input>
+      <ion-input type="email"
+                 [disabled]="!editMode"
+                 formControlName="email"
+                 value="{{user.email}}"></ion-input>
     </ion-item>
     <ion-item no-lines *ngIf="formErrors.email">
       <div class="alert alert-danger">{{formErrors.email}}</div>
     </ion-item>
 
-    <ion-item (tap)="changePassword()">
+    <ion-item (tap)="editMode && changePassword()">
       <ion-label>Password :</ion-label>
       <ion-input type="password" disabled="true" value="******"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label>Gender :</ion-label>
-      <ion-select [ngModelOptions]="{standalone: true}" [(ngModel)]="user.gender">
+      <ion-select
+        [disabled]="!editMode"
+        [ngModelOptions]="{standalone: true}"
+        [(ngModel)]="userGender">
         <ion-option value="f">Female</ion-option>
         <ion-option value="m">Male</ion-option>
       </ion-select>
@@ -49,27 +63,58 @@
 
     <ion-item>
       <ion-label>Age :</ion-label>
-      <ion-input type="number" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.age"></ion-input>
+      <ion-input type="number"
+                 [disabled]="!editMode"
+                 formControlName="age"
+                 value="{{user.age}}"></ion-input>
+    </ion-item>
+    <ion-item no-lines *ngIf="formErrors.age">
+      <div class="alert alert-danger">{{formErrors.age}}</div>
     </ion-item>
 
     <ion-item>
       <ion-label>Country :</ion-label>
-      <ion-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.country"></ion-input>
+      <ion-input type="text"
+                 [disabled]="!editMode"
+                 formControlName="country"
+                 value="{{user.country}}"></ion-input>
+    </ion-item>
+    <ion-item no-lines *ngIf="formErrors.country">
+      <div class="alert alert-danger">{{formErrors.country}}</div>
     </ion-item>
 
     <ion-item>
       <ion-label>Location :</ion-label>
-      <ion-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.location"></ion-input>
+      <ion-input type="text"
+                 [disabled]="!editMode"
+                 formControlName="location"
+                 value="{{user.location}}"></ion-input>
+    </ion-item>
+    <ion-item no-lines *ngIf="formErrors.location">
+      <div class="alert alert-danger">{{formErrors.location}}</div>
     </ion-item>
 
     <ion-item>
       <ion-label>Hobbies :</ion-label>
-      <ion-input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="user.hobbies"></ion-input>
+      <ion-input type="text"
+                 [disabled]="!editMode"
+                 formControlName="hobbies"
+                 value="{{user.hobbies}}"></ion-input>
+    </ion-item>
+    <ion-item no-lines *ngIf="formErrors.hobbies">
+      <div class="alert alert-danger">{{formErrors.hobbies}}</div>
     </ion-item>
   </form>
 
-  <button ion-button block large margin-top [disabled]="!profileForm.valid"
-          (tap)="profileForm.valid && save()">Save changes
-  </button>
+  <ion-item>
+    <button ion-button margin
+            [disabled]="!profileForm.valid" *ngIf="editMode"
+            (tap)="profileForm.valid && save()">Save changes
+    </button>
+
+    <button ion-button margin
+            *ngIf="editMode" (tap)="editItems(false)">Cancel changes
+    </button>
+  </ion-item>
 
 </ion-content>

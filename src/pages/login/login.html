@@ -18,7 +18,7 @@
         <ion-label floating>Username</ion-label>
         <ion-input type="text" formControlName="username" [(ngModel)]="userModel.username"></ion-input>
       </ion-item>
-      <ion-item no-lines *ngIf="formErrors.username">
+      <ion-item no-lines *ngIf="!isOnLogin && formErrors.username !== ''">
         <div class="alert alert-danger">{{formErrors.username}}</div>
       </ion-item>
 
@@ -34,7 +34,7 @@
         <ion-label floating>Confirm Password</ion-label>
         <ion-input type="password" formControlName="confirmPassword" [(ngModel)]="confirmPassword"></ion-input>
       </ion-item>
-      <ion-item no-lines *ngIf="formErrors.confirmPassword">
+      <ion-item no-lines *ngIf="!isOnLogin && formErrors.confirmPassword !== ''">
         <div class="alert alert-danger">{{formErrors.confirmPassword}}</div>
       </ion-item>
 
@@ -43,7 +43,7 @@
       </ion-item>
 
       <ion-item no-lines *ngIf="isOnLogin">
-        <button ion-button block large color="dark" clear (tap)="resetPasswork()">Forgot password</button>
+        <button ion-button block large color="dark" clear (tap)="resetPassword()">Forgot password</button>
       </ion-item>
 
       <ion-item no-lines *ngIf="!isOnLogin">

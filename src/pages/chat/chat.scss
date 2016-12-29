@@ -23,8 +23,25 @@ page-chat {
     background: #f0f0f0;
   }
 
+  ion-item {
+    background-color: inherit !important;
+  }
+
   .bold {
     font-weight: bold;
   }
+
+  /*Style the chat background*/
+  .chat-background {
+    max-width: 100%;
+    max-height: 100%;
+    opacity: 0.5;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    z-index: -1;
+  }
+
 }
 

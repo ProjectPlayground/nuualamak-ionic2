@@ -1,5 +1,12 @@
 
 page-add-item {
+
+  .override-background-preview {
+    max-height: 10rem !important;
+    max-width: 10rem !important;
+    border-radius: inherit !important;
+  }
+
   .btns-modal ion-label {
     display: flex;
     justify-content: space-around;

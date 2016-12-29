@@ -20,7 +20,6 @@ export class ChatService {
   send(roomName: string, typedMsg: string) {
     return this.userService.getCurrent()
       .then((user: UserModel) => {
-      console.log(new Date().getTime());
         return this.refRooms.child(roomName).push({
           user: {uid: user.uid, username: user.username},
           content: typedMsg,
