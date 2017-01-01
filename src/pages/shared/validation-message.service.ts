@@ -52,7 +52,8 @@ export class ValidationMessageService {
     },
     'hobbies': {
       'maxlength': this.maxLength('Hobbies', this.maxLengthHobbies)
-    }
+    },
+    'itemCategory': {}
   };
 
   onValueChanged(currentForm: FormGroup, formErrors: any) {

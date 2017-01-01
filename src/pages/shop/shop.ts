@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
-import { LoadingController, ToastController, ModalController, LoadingOptions, AlertController } from 'ionic-angular';
+import {
+  LoadingController, ToastController, ModalController, LoadingOptions, AlertController,
+  Loading
+} from 'ionic-angular';
 import { UserService } from '../shared/user/user-service';
 import { UserModel } from '../shared/user/user.model';
 import { ItemModel } from './item/item.model';
@@ -15,7 +18,8 @@ export class ShopPage {
 
   firstLoad = true;
   currentUser: UserModel;
-  items: Array<ItemModel>;
+  private itemsList: Array<ItemModel>;
+  allItems: Array<{category: string, items: Array<ItemModel>}>;
   itemsBought: Array<ItemBoughtModel>;
 
   private loadingOptions: LoadingOptions = {
@@ -32,6 +36,7 @@ export class ShopPage {
   }
 
   ionViewWillEnter() {
+    this.allItems = new Array();
     this.firstLoad = true;
     let loading = this.loadingCtrl.create(this.loadingOptions);
     loading.present();
@@ -108,7 +113,7 @@ export class ShopPage {
           handler: () => {
             let loading = this.loadingCtrl.create(this.loadingOptions);
             loading.present();
-            this.itemService.activate(this.getItemBoughtInfo(item), this.itemsBought, this.items)
+            this.itemService.activate(this.getItemBoughtInfo(item), this.itemsBought, this.itemsList)
               .then(() => {
                 this.getItemsBought();
                 loading.dismissAll();
@@ -157,10 +162,18 @@ export class ShopPage {
       .then(itemsBought => this.itemsBought = itemsBought);
   }
 
-  private getItems(loading) {
+  private getItems(loading: Loading) {
+    this.allItems = new Array();
     this.itemService.getAll()
       .then(items => {
-        this.items = items;
+        this.itemsList = items;
+        for (let item of items) {
+          let itemsByCategory: {category: string, items: Array<ItemModel>} = this.getItemsByCategory(item.category);
+          if (itemsByCategory.items.length === 0) {
+            this.allItems.push(itemsByCategory);
+          }
+          itemsByCategory.items.push(item);
+        }
         loading.dismissAll();
         this.firstLoad = false;
       })
@@ -170,6 +183,15 @@ export class ShopPage {
         console.error(err);
         this.showToast('Fail loading items', 'toastStyleError');
       });
+  }
+
+  private getItemsByCategory(category: string) {
+    for (let itemsCategory of this.allItems) {
+      if (itemsCategory.category === category) {
+        return itemsCategory;
+      }
+    }
+    return {category: category, items: []};
   }
 
   private getItemBoughtInfo(item: ItemModel): ItemBoughtModel {

@@ -16,31 +16,35 @@
   </p>
 
   <ion-list>
-    <ion-item class="list-style" *ngFor="let item of items">
-      <h3>{{item.name}}</h3>
-      <p>{{item.price}}</p>
+    <div *ngFor="let itemsCategory of allItems">
+      <h3 class="list-style">{{itemsCategory.category}}</h3>
 
-      <div item-right class="btn-shop">
+      <ion-item class="list-style" *ngFor="let item of itemsCategory">
+        <h3>{{item.name}}</h3>
+        <p>cost: {{item.price}}</p>
 
-        <button ion-button clear icon-only *ngIf="!isItemBought(item)"
-                (click)="buyItem(item)">
-          <ion-icon><i class="material-icons violet-color">add_shopping_cart</i></ion-icon>
-        </button>
+        <div item-right class="btn-shop">
 
-        <button ion-button clear icon-only *ngIf="isItemBought(item) && !isItemActive(item)"
-                (click)="activateItem(item)">
-          <ion-icon><i class="material-icons grey_color">gavel</i></ion-icon>
-        </button>
+          <button ion-button clear icon-only *ngIf="!isItemBought(item)"
+                  (click)="buyItem(item)">
+            <ion-icon><i class="material-icons violet-color">add_shopping_cart</i></ion-icon>
+          </button>
 
-        <div clear *ngIf="isItemActive(item) && !isItemInactive(item)">
-          <ion-icon><i class="material-icons green-color">offline_pin</i></ion-icon>
+          <button ion-button clear icon-only *ngIf="isItemBought(item) && !isItemActive(item)"
+                  (click)="activateItem(item)">
+            <ion-icon><i class="material-icons grey_color">gavel</i></ion-icon>
+          </button>
+
+          <div clear *ngIf="isItemActive(item) && !isItemInactive(item)">
+            <ion-icon><i class="material-icons green-color">offline_pin</i></ion-icon>
+          </div>
+
+          <div *ngIf="getActivationDate(item) !== ''" class="date-font">
+            {{getActivationDate(item) | date}}
+          </div>
         </div>
-
-        <div *ngIf="getActivationDate(item) !== ''" class="date-font">
-          {{getActivationDate(item) | date}}
-        </div>
-      </div>
-    </ion-item>
+      </ion-item>
+    </div>
   </ion-list>
 
   <ion-fab bottom right *ngIf="currentUser?.isAdmin">

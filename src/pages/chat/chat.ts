@@ -6,6 +6,7 @@ import { UserService } from '../shared/user/user-service';
 import { UserModel } from '../shared/user/user.model';
 import { ItemService } from '../shop/item/item.service';
 import { ItemModel } from '../shop/item/item.model';
+import { ChatTheme } from './chat-theme';
 
 @Component({
   selector: 'page-chat',
@@ -19,11 +20,8 @@ export class ChatPage {
   user: UserModel;
   messageList: Array<ChatMessage>;
   itemsBought: Array<ItemModel>;
+  chatTheme: ChatTheme;
 
-  fontName = 'inherit';
-  fontColor = 'black';
-  backgroundImage = '';
-  isBold = false;
   isPaused = false;
   firstLoad = true;
 
@@ -35,14 +33,15 @@ export class ChatPage {
               private toastCtrl: ToastController, private loadingCtrl: LoadingController, private renderer: Renderer,
               private userService: UserService, private itemService: ItemService) {
 
+    this.chatTheme = new ChatTheme();
+    this.itemsBought = new Array<ItemModel>();
+    this.typedMsg = '';
+    this.currentRoom = this.navParam.data;
     this.loadingOptions = {
       content: 'Loading',
       spinner: 'crescent',
       showBackdrop: false
     };
-    this.itemsBought = new Array<ItemModel>();
-    this.typedMsg = '';
-    this.currentRoom = this.navParam.data;
   }
 
   ionViewWillEnter() {
@@ -113,19 +112,20 @@ export class ChatPage {
     this.itemsBought.map((itemBought: ItemModel) => {
       switch (itemBought.category) {
         case 'theme':
-          this.backgroundImage = itemBought.background_image;
+          this.chatTheme.backgroundImage = itemBought.backgroundImage;
+          this.chatTheme.takeAllPlace = itemBought.takeAllPlace;
           break;
         case 'font':
-          this.fontName = itemBought.font_name;
+          this.chatTheme.fontName = itemBought.fontName;
           break;
-        case 'font_color':
-          this.fontColor = itemBought.font_color;
+        case 'fontColor':
+          this.chatTheme.fontColor = itemBought.fontColor;
           break;
         case 'emoticon':
           //TODO change emojis list
           break;
         case 'bold':
-          this.isBold = true;
+          this.chatTheme.isBold = true;
           break;
 
       }
@@ -135,7 +135,8 @@ export class ChatPage {
   private subscribeToRoom(loading ?) {
     this.chatService.getLastsEvent(this.currentRoom).on('value', (snapshot) => {
       let chatMessage = snapshot.val();
-      this.firstLoad ? loading.dismissAll() : 0;
+      this.firstLoad && loading ? loading.dismissAll() : 0;
+      this.firstLoad = false;
       this.messageList = Object.keys(chatMessage ? chatMessage : [])
         .map(key => chatMessage[key]);
       setTimeout(() => this.content ? this.content.scrollToBottom(500) : 0, 1000);

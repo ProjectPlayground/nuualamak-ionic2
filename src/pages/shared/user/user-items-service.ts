@@ -29,7 +29,7 @@ export class UserItemsService {
             itemsBought.map((itemBought: ItemBoughtModel) => {
               let dateEnd = new Date(itemBought.activationDate);
               if (!items[itemBought.itemId]) {
-                alert('ERROR updating items in database, please contact admin !');
+                alert('ERROR updating some items in database, please contact admin !');
               } else {
                 dateEnd.setDate(dateEnd.getDate() + items[itemBought.itemId].daysToExpire);
                 if (new Date().getTime() > dateEnd.getTime()) {

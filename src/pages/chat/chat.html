@@ -21,9 +21,9 @@
     <ion-item vertical-align-top text-wrap *ngIf="!firstLoad && messageList?.length === 0">
       Send a message, and it would be the first one in this room.
     </ion-item>
-    <ion-item text-wrap class="chat-msg" *ngFor="let msg of messageList"
-              [ngClass]="{userMsg: !backgroundImage && msg.user.uid===user?.uid,
-                othersMsg: !backgroundImage && msg.user.uid!==user?.uid}">
+    <ion-item text-wrap class="chat-msg" *ngFor="let msg of messageList">
+              <!--[ngClass]="{userMsg: !backgroundImage && msg.user.uid===user?.uid,-->
+                <!--othersMsg: !backgroundImage && msg.user.uid!==user?.uid}">-->
             <span class="chat-header">
                 <p>{{msg.user.username}}:</p>
                 <p *ngIf="getFarCodeTimestamp(msg) === 0">last {{getTimePassed(msg) | date:'mm'}} minutes</p>

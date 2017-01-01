@@ -31,17 +31,17 @@ export class ItemService {
   add(newItem: ItemModel) {
     let newItemId = this.refItemsList.push().key;
     newItem.id = newItemId;
-    if (newItem.category === 'theme' && newItem.background_image) {
-      let indexToSplit = newItem.background_image.lastIndexOf('/');
-      let fileDirectory = newItem.background_image.substring(0, indexToSplit);
-      let fileName = newItem.background_image.substring(indexToSplit + 1);
+    if (newItem.category === 'theme' && newItem.backgroundImage) {
+      let indexToSplit = newItem.backgroundImage.lastIndexOf('/');
+      let fileDirectory = newItem.backgroundImage.substring(0, indexToSplit);
+      let fileName = newItem.backgroundImage.substring(indexToSplit + 1);
       // Create the new background file
       return File.readAsArrayBuffer(fileDirectory, fileName)
         .then((pictureBuff: ArrayBuffer) => {
           // Upload the background
-          return this.refStorageBackgroundImage.put(pictureBuff)
+          return this.refStorageBackgroundImage.child(newItem.id).put(pictureBuff)
             .then((fileSnapshot: firebase.storage.UploadTaskSnapshot) => {
-              newItem.background_image = fileSnapshot.downloadURL;
+              newItem.backgroundImage = fileSnapshot.downloadURL;
               return this.refItemsList.child(newItemId).update(newItem);
             });
         });
